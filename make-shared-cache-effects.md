@@ -120,6 +120,7 @@ Simplifying somewhat (some details are covered [here](http://sabercomlogica.com/
 without interfering writes, a copy of a corresponding cache like appears in each core's L1 cache in shared state and all the reads are really fast.
 If any thread attempts to write something in the same cache line (not necessarily in the very same address!), all the other cores which have this cache line will invalidate it. Any subsequent read will result in a cache miss and the current value of the cache line will be transferred between cores through L3 cache or RAM.
 
-Because `make_shared` places reference counter right next to the data, they are likely to be in the same cache line.
+Because `make_shared` places the reference counter right next to the data, they are likely to be in the same cache line.
 Although reads and writes happen at different location, they result in false sharing and lots of cache misses.
 
+`std::shared_ptr<uint32_t>(new uint32_t(42))` makes two allocation, placing the reference counter further from each other, so that they end up in different cache lines.
